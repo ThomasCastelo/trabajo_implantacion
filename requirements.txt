@@ -7,4 +7,5 @@ pydantic==2.10.4
 pydantic_core==2.27.2
 typing_extensions>=4.12.2
 bcrypt==4.1.2
-starlette==0.37.0itsdangerous
+starlette==0.37.0
+itsdangerous

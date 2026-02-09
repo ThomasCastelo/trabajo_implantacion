@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block titulo %}Insertar Dinosaurio{% endblock %}
+
+{% block contenido %}
+    <h1>Insertar Nuevo Dinosaurio</h1>
+    <form method="post" action="/do_insertar_dinosaurio">
+        <div>
+            <label for="nombre">Nombre del Dinosaurio:</label><br>
+            <input type="text" id="nombre" name="nombre" placeholder="Introduce el nombre" required>
+        </div>
+        <br>
+        <button type="submit">Guardar Dinosaurio</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Mi Aplicación de Dinosaurios{% endblock %}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto+Slab:wght@400;600&display=swap');
+
+        :root {
+            --bg: #0b0f10;
+            --panel: #11181a;
+            --panel-2: #0f1416;
+            --accent: #b78c4a;
+            --accent-2: #5bbd8b;
+            --text: #e7ecef;
+            --muted: #a0a7ad;
+            --border: #1f2a2e;
+            --danger: #c94c4c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            min-height: 100vh;
+            background: radial-gradient(1200px 600px at 10% -10%, #1b2b2d 0%, #0b0f10 60%) fixed;
+            color: var(--text);
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #0f1618 0%, #0b0f10 100%);
+            color: var(--text);
+            padding: 24px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            box-shadow: 0 0 30px rgba(0,0,0,0.4);
+        }
+        
+        .sidebar-header {
+            margin-bottom: 22px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .sidebar h2 {
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 10px;
+            font-family: 'Roboto Slab', serif;
+            letter-spacing: 1px;
+        }
+        
+        .user-info {
+            background-color: var(--panel);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+        }
+        
+        .user-badge {
+            display: inline-block;
+            background-color: var(--accent-2);
+            color: #0b0f10;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            margin-top: 6px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .user-badge.admin {
+            background-color: var(--accent);
+            color: #0b0f10;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+        
+        .sidebar ul li a {
+            color: var(--text);
+            text-decoration: none;
+            display: block;
+            padding: 12px 12px;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+        
+        .sidebar ul li a:hover {
+            background-color: var(--panel);
+            border-color: var(--border);
+            transform: translateX(2px);
+        }
+        
+        .sidebar .logout {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .sidebar .logout a {
+            background-color: var(--danger);
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .sidebar .logout a:hover {
+            background-color: #a63b3b;
+        }
+        
+        .contenido {
+            margin-left: 260px;
+            padding: 36px;
+            flex: 1;
+            min-height: 100vh;
+            background: linear-gradient(180deg, rgba(17,24,26,0.7) 0%, rgba(11,15,16,0.9) 100%);
+        }
+        
+        h1, h2, h3, h4 {
+            color: var(--text);
+            margin-bottom: 16px;
+            font-family: 'Roboto Slab', serif;
+        }
+        
+        form {
+            margin: 20px 0;
+        }
+        
+        input, button, select, textarea {
+            padding: 10px 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #0f1416;
+            color: var(--text);
+        }
+        
+        button {
+            background-color: var(--accent);
+            color: #0b0f10;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+        }
+        
+        button:hover {
+            background-color: #a17a3f;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--panel-2);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        
+        table th, table td {
+            border-bottom: 1px solid var(--border);
+            padding: 12px 14px;
+            text-align: left;
+        }
+        
+        table th {
+            background-color: #141b1e;
+            color: var(--text);
+        }
+        
+        .mensaje {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            background-color: #0f1a16;
+            color: #b7e4c7;
+            border: 1px solid #1f3a2e;
+        }
+        
+        .error {
+            background-color: #1a0f10;
+            color: #ffb3b3;
+            border: 1px solid #3a1f22;
+        }
+
+        .admin-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .admin-section h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+    </style>
+    {% block estilos %}{% endblock %}
+</head>
+<body>
+    <!-- Barra lateral -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>� Museo Dinosaurios</h2>
+            {% if usuario %}
+            <div class="user-info">
+                <strong>{{ usuario.username }}</strong>
+                {% if usuario.rol == 'admin' or usuario.username == 'admin' %}
+                <div class="user-badge admin">ADMIN</div>
+                {% else %}
+                <div class="user-badge">USUARIO</div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        
+        <ul>
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="/dinosaurios">🦖 Ver Dinosaurios</a></li>
+            
+            {% if usuario %}
+            <li><a href="/dinosaurios/nuevo/form">➕ Nuevo Dinosaurio</a></li>
+            <li><a href="/eras/">⏰ Gestionar Eras</a></li>
+            <li><a href="/regiones/">🌍 Gestionar Regiones</a></li>
+            <li><a href="/habitats/">🌳 Gestionar Hábitats</a></li>
+            {% endif %}
+            
+            {% if usuario and (usuario.rol == 'admin' or usuario.username == 'admin') %}
+            <div class="admin-section">
+                <h3>⚙️ Administración</h3>
+                <li><a href="/usuarios">👥 Gestión de Usuarios</a></li>
+            </div>
+            {% endif %}
+        </ul>
+        
+        {% if usuario %}
+        <div class="logout">
+            <a href="/auth/logout">🚪 Cerrar Sesión</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Contenido principal -->
+    <div class="contenido">
+        {% block contenido %}
+        <h1>Bienvenido</h1>
+        <p>Selecciona una opción del menú lateral.</p>
+        {% endblock %}
+    </div>
+</body>
+</html>
+

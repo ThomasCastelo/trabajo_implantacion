@@ -1,0 +1,464 @@
+{% extends "base.html" %}
+
+{% block titulo %}Ver Dinosaurio{% endblock %}
+
+{% block estilos %}
+<style>
+    .detail-page {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .detail-hero {
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid #1f2a2e;
+        background: linear-gradient(135deg, rgba(27,43,45,0.7), rgba(11,15,16,0.9));
+        box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .detail-title {
+        margin: 0;
+        font-size: 30px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #1f2a2e;
+        text-decoration: none;
+        color: #e7ecef;
+        background: #11181a;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        border-color: #2c3a40;
+    }
+
+    .btn-warning {
+        background: #5bbd8b;
+        color: #0b0f10;
+        border-color: #5bbd8b;
+        font-weight: 600;
+    }
+
+    .btn-danger {
+        background: #c94c4c;
+        color: #0b0f10;
+        border-color: #c94c4c;
+        font-weight: 600;
+    }
+
+    .detail-card {
+        background: #0f1416;
+        border: 1px solid #1f2a2e;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+    }
+
+    .detail-body {
+        padding: 20px;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 18px;
+        margin-top: 16px;
+    }
+
+    .detail-section {
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid #1f2a2e;
+        background: #11181a;
+    }
+
+    .detail-section h5 {
+        margin-bottom: 8px;
+        color: #e7ecef;
+        font-family: 'Roboto Slab', serif;
+    }
+
+    .detail-list {
+        list-style: none;
+        padding-left: 0;
+        color: #a0a7ad;
+    }
+
+    .detail-list li {
+        margin: 6px 0;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid #1f2a2e;
+        background: #11181a;
+        color: #e7ecef;
+        font-size: 12px;
+        margin: 4px 6px 0 0;
+    }
+
+    .badge-accent { border-color: #b78c4a; color: #f1d2a0; }
+    .badge-info { border-color: #5bbd8b; color: #b7e4c7; }
+
+    .dino-image {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 14px;
+        margin-bottom: 18px;
+    }
+
+    .comments-section {
+        margin-top: 24px;
+        background: #0f1416;
+        border: 1px solid #1f2a2e;
+        border-radius: 14px;
+        padding: 20px;
+    }
+
+    .comment {
+        padding: 14px;
+        margin: 10px 0;
+        border-radius: 10px;
+        background: #11181a;
+        border: 1px solid #1f2a2e;
+    }
+
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        color: #a0a7ad;
+        font-size: 13px;
+    }
+
+    .comment-author {
+        font-weight: 600;
+        color: #b78c4a;
+    }
+
+    .comment-content {
+        color: #e7ecef;
+        margin: 8px 0;
+    }
+
+    .comment-reply {
+        margin-left: 30px;
+        margin-top: 8px;
+        padding-left: 12px;
+        border-left: 2px solid #1f2a2e;
+    }
+
+    .comment-form {
+        margin-top: 16px;
+    }
+
+    .comment-form textarea {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid #1f2a2e;
+        background: #11181a;
+        color: #e7ecef;
+        font-family: inherit;
+        resize: vertical;
+    }
+
+    .detail-footer {
+        padding: 14px 20px;
+        border-top: 1px solid #1f2a2e;
+        background: #0b0f10;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="detail-page">
+    <div class="detail-hero">
+        <div>
+            <h1 class="detail-title">{{ dinosaurio.nombre }}</h1>
+            {% if dinosaurio.descripcion %}
+            <div style="color:#a0a7ad; margin-top:6px;">{{ dinosaurio.descripcion }}</div>
+            {% endif %}
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="/dinosaurios/" class="btn">← Volver</a>
+        </div>
+    </div>
+
+    <div class="detail-card">
+        {% if dinosaurio.imagen %}
+        <div style="padding: 20px 20px 0;">
+            <img src="{{ dinosaurio.imagen }}" alt="{{ dinosaurio.nombre }}" class="dino-image">
+        </div>
+        {% endif %}
+        <div class="detail-body">
+            <div class="detail-grid">
+                <div class="detail-section">
+                    <h5>Características</h5>
+                    <ul class="detail-list">
+                        {% if dinosaurio.tipo %}
+                        <li><strong>Tipo:</strong> {{ dinosaurio.tipo }}</li>
+                        {% endif %}
+                        {% if dinosaurio.dieta %}
+                        <li><strong>Dieta:</strong> {{ dinosaurio.dieta }}</li>
+                        {% endif %}
+                        {% if dinosaurio.peso_kg %}
+                        <li><strong>Peso:</strong> {{ dinosaurio.peso_kg }} kg</li>
+                        {% endif %}
+                        {% if dinosaurio.altura_metros %}
+                        <li><strong>Altura:</strong> {{ dinosaurio.altura_metros }} m</li>
+                        {% endif %}
+                        {% if dinosaurio.longitud_metros %}
+                        <li><strong>Longitud:</strong> {{ dinosaurio.longitud_metros }} m</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <div class="detail-section">
+                    <h5>Información Geográfica</h5>
+                    <ul class="detail-list">
+                        {% if dinosaurio.era %}
+                        <li><strong>Era:</strong> {{ dinosaurio.era.nombre }} ({{ dinosaurio.era.periodo_fin }}-{{ dinosaurio.era.periodo_inicio }} M.A.)</li>
+                        {% endif %}
+                        {% if dinosaurio.region %}
+                        <li><strong>Región:</strong> {{ dinosaurio.region.nombre }}</li>
+                        <li><strong>País:</strong> {{ dinosaurio.region.pais }}</li>
+                        <li><strong>Continente:</strong> {{ dinosaurio.region.continente }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            
+            {% if dinosaurio.habitats %}
+            <div class="detail-section" style="margin-top:16px;">
+                <h5>Hábitats</h5>
+                <div>
+                    {% for habitat in dinosaurio.habitats %}
+                    <span class="badge badge-info">
+                        {{ habitat.nombre }} · {{ habitat.tipo_ambiente }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="detail-footer">
+            <a href="/dinosaurios/{{ dinosaurio.id }}/editar" class="btn btn-warning">Editar</a>
+            <button type="button" class="btn btn-primary" onclick="toggleComentarioForm()">Añadir comentario</button>
+            {% if usuario and (usuario.rol == "admin" or usuario.username == "admin") %}
+            <a href="/dinosaurios/{{ dinosaurio.id }}/borrar" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas borrar este dinosaurio?')">Borrar</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sección de Comentarios -->
+    <div class="comments-section" id="comentarios">
+        <h3 style="margin-bottom: 16px;">💬 Comentarios ({{ comentarios|length }})</h3>
+        
+        <!-- Formulario para nuevo comentario -->
+        <div class="comment-form" id="comentario-form" style="display:none;">
+            <h5>Agregar Comentario</h5>
+            <form method="post" action="/comentarios/crear">
+                <input type="hidden" name="dinosaurio_id" value="{{ dinosaurio.id }}">
+                <textarea name="contenido" rows="3" placeholder="Escribe tu comentario..." required></textarea>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Enviar Comentario</button>
+            </form>
+        </div>
+
+        <!-- Lista de comentarios -->
+        {% for comentario in comentarios %}
+        <div class="comment">
+            <div class="comment-header">
+                <span class="comment-author">{{ comentario.usuario_nombre }}</span>
+                <span class="comment-date">{{ comentario.fecha_creacion }}</span>
+                {% if comentario.fecha_modificacion %}
+                <span class="comment-edited">(editado)</span>
+                {% endif %}
+            </div>
+            <div class="comment-content" id="comment-content-{{ comentario.id }}">{{ comentario.contenido }}</div>
+            
+            <!-- Sección de acciones y votos -->
+            <div class="comment-actions" style="display: flex; gap: 10px; margin-top: 8px; align-items: center; font-size: 12px;">
+                <!-- Votos -->
+                <div class="comment-votes" style="display: flex; gap: 6px; align-items: center;">
+                    <form method="post" action="/comentarios/{{ comentario.id }}/votar" style="display:inline;">
+                        <input type="hidden" name="dinosaurio_id" value="{{ dinosaurio.id }}">
+                        <input type="hidden" name="tipo_voto" value="positivo">
+                        <button type="submit" class="btn btn-sm {% if comentario.voto_usuario == 'positivo' %}btn-success{% else %}btn-outline{% endif %}" style="padding: 3px 8px; font-size: 11px;">👍 {{ comentario.votos_positivos }}</button>
+                    </form>
+                    <form method="post" action="/comentarios/{{ comentario.id }}/votar" style="display:inline;">
+                        <input type="hidden" name="dinosaurio_id" value="{{ dinosaurio.id }}">
+                        <input type="hidden" name="tipo_voto" value="negativo">
+                        <button type="submit" class="btn btn-sm {% if comentario.voto_usuario == 'negativo' %}btn-danger{% else %}btn-outline{% endif %}" style="padding: 3px 8px; font-size: 11px;">👎 {{ comentario.votos_negativos }}</button>
+                    </form>
+                </div>
+                
+                <!-- Botones de usuario -->
+                {% if usuario and (comentario.usuario_id == usuario.id or usuario.rol == 'admin' or usuario.username == 'admin') %}
+                <button onclick="toggleEditForm('{{ comentario.id }}')" class="btn btn-sm btn-warning" style="padding: 3px 8px; font-size: 11px;">✎ Editar</button>
+                <form method="post" action="/comentarios/{{ comentario.id }}/borrar" style="display:inline;">
+                    <input type="hidden" name="dinosaurio_id" value="{{ dinosaurio.id }}">
+                    <button type="submit" class="btn btn-sm btn-danger" style="padding: 3px 8px; font-size: 11px;" onclick="return confirm('¿Borrar comentario?')">🗑 Borrar</button>
+                </form>
+                {% endif %}
+            </div>
+            
+            <!-- Formulario para editar (oculto por defecto) -->
+            {% if usuario and (comentario.usuario_id == usuario.id or usuario.rol == 'admin' or usuario.username == 'admin') %}
+            <div id="edit-form-{{ comentario.id }}" style="display: none; margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
+                <form method="post" action="/comentarios/{{ comentario.id }}/actualizar">
+                    <input type="hidden" name="dinosaurio_id" value="{{ dinosaurio.id }}">
+                    <textarea name="contenido" rows="3" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">{{ comentario.contenido }}</textarea>
+                    <div style="margin-top: 8px; display: flex; gap: 8px;">
+                        <button type="submit" class="btn btn-primary" style="font-size: 12px; padding: 6px 12px;">Guardar Cambios</button>
+                        <button type="button" onclick="toggleEditForm('{{ comentario.id }}')" class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px;">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+            
+            <!-- Formulario para responder -->
+            <div class="comment-form" style="margin-top: 10px;">
+                <form method="post" action="/comentarios/crear">
+                    <input type="hidden" name="dinosaurio_id" value="{{ dinosaurio.id }}">
+                    <input type="hidden" name="comentario_padre_id" value="{{ comentario.id }}">
+                    <textarea name="contenido" rows="2" placeholder="Responder..." required></textarea>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 6px; font-size: 12px; padding: 6px 10px;">Responder</button>
+                </form>
+            </div>
+            
+            <!-- Respuestas -->
+            {% for respuesta in comentario.respuestas %}
+            <div class="comment comment-reply">
+                <div class="comment-header">
+                    <span class="comment-author">{{ respuesta.usuario_nombre }}</span>
+                    <span class="comment-date">{{ respuesta.fecha_creacion }}</span>
+                    {% if respuesta.fecha_modificacion %}
+                    <span class="comment-edited">(editado)</span>
+                    {% endif %}
+                </div>
+                <div class="comment-content" id="comment-content-{{ respuesta.id }}">{{ respuesta.contenido }}</div>
+                
+                <!-- Sección de acciones y votos para respuestas -->
+                <div class="comment-actions" style="display: flex; gap: 10px; margin-top: 8px; align-items: center; font-size: 12px;">
+                    <!-- Votos -->
+                    <div class="comment-votes" style="display: flex; gap: 6px; align-items: center;">
+                        <form method="post" action="/comentarios/{{ respuesta.id }}/votar" style="display:inline;">
+                            <input type="hidden" name="dinosaurio_id" value="{{ dinosaurio.id }}">
+                            <input type="hidden" name="tipo_voto" value="positivo">
+                            <button type="submit" class="btn btn-sm {% if respuesta.voto_usuario == 'positivo' %}btn-success{% else %}btn-outline{% endif %}" style="padding: 3px 8px; font-size: 11px;">👍 {{ respuesta.votos_positivos }}</button>
+                        </form>
+                        <form method="post" action="/comentarios/{{ respuesta.id }}/votar" style="display:inline;">
+                            <input type="hidden" name="dinosaurio_id" value="{{ dinosaurio.id }}">
+                            <input type="hidden" name="tipo_voto" value="negativo">
+                            <button type="submit" class="btn btn-sm {% if respuesta.voto_usuario == 'negativo' %}btn-danger{% else %}btn-outline{% endif %}" style="padding: 3px 8px; font-size: 11px;">👎 {{ respuesta.votos_negativos }}</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Botones de usuario -->
+                    {% if usuario and (respuesta.usuario_id == usuario.id or usuario.rol == 'admin' or usuario.username == 'admin') %}
+                    <button onclick="toggleEditForm('{{ respuesta.id }}')" class="btn btn-sm btn-warning" style="padding: 3px 8px; font-size: 11px;">✎ Editar</button>
+                    <form method="post" action="/comentarios/{{ respuesta.id }}/borrar" style="display:inline;">
+                        <input type="hidden" name="dinosaurio_id" value="{{ dinosaurio.id }}">
+                        <button type="submit" class="btn btn-sm btn-danger" style="padding: 3px 8px; font-size: 11px;" onclick="return confirm('¿Borrar respuesta?')">🗑 Borrar</button>
+                    </form>
+                    {% endif %}
+                </div>
+                
+                <!-- Formulario para editar respuesta -->
+                {% if usuario and (respuesta.usuario_id == usuario.id or usuario.rol == 'admin' or usuario.username == 'admin') %}
+                <div id="edit-form-{{ respuesta.id }}" style="display: none; margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
+                    <form method="post" action="/comentarios/{{ respuesta.id }}/actualizar">
+                        <input type="hidden" name="dinosaurio_id" value="{{ dinosaurio.id }}">
+                        <textarea name="contenido" rows="3" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">{{ respuesta.contenido }}</textarea>
+                        <div style="margin-top: 8px; display: flex; gap: 8px;">
+                            <button type="submit" class="btn btn-primary" style="font-size: 12px; padding: 6px 12px;">Guardar Cambios</button>
+                            <button type="button" onclick="toggleEditForm('{{ respuesta.id }}')" class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        
+        {% if not comentarios %}
+        <p style="color: #a0a7ad; text-align: center; padding: 20px;">No hay comentarios aún. ¡Sé el primero en comentar!</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function toggleComentarioForm() {
+        const form = document.getElementById("comentario-form");
+        if (!form) return;
+        form.style.display = form.style.display === "none" ? "block" : "none";
+        if (form.style.display === "block") {
+            const textarea = form.querySelector("textarea");
+            if (textarea) textarea.focus();
+        }
+    }
+    
+    function toggleEditForm(comentarioId) {
+        const editForm = document.getElementById(`edit-form-${comentarioId}`);
+        const commentContent = document.getElementById(`comment-content-${comentarioId}`);
+        if (!editForm) return;
+        
+        if (editForm.style.display === "none") {
+            editForm.style.display = "block";
+            commentContent.style.display = "none";
+        } else {
+            editForm.style.display = "none";
+            commentContent.style.display = "block";
+        }
+    }
+</script>
+
+<style>
+    .comment-actions .btn-outline {
+        background-color: transparent;
+        border: 1px solid #ccc;
+        color: #666;
+    }
+    
+    .comment-actions .btn-success {
+        background-color: #4caf50;
+        color: white;
+        border: 1px solid #4caf50;
+    }
+    
+    .comment-actions .btn-danger {
+        background-color: #f44336;
+        color: white;
+        border: 1px solid #f44336;
+    }
+    
+    .comment-edited {
+        color: #999;
+        font-size: 10px;
+        font-style: italic;
+    }
+</style>
+{% endblock %}

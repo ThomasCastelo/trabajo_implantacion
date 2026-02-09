@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block titulo %}Nuevo Dinosaurio{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">🦖 Nuevo Dinosaurio</h1>
+            
+            <form method="post" action="/dinosaurios/nuevo" enctype="multipart/form-data" class="needs-validation">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Información Básica -->
+                        <h5 class="card-title mb-4">Información Básica</h5>
+                        
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="imagen" class="form-label">Imagen del Dinosaurio</label>
+                            <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+                            <small class="text-muted">Formatos aceptados: JPG, PNG, GIF</small>
+                        </div>
+                        
+                        <!-- Características -->
+                        <h5 class="card-title mb-4 mt-5">Características Físicas</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tipo" class="form-label">Tipo</label>
+                                    <input type="text" class="form-control" id="tipo" name="tipo" placeholder="Ej: Saurisquia">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="dieta" class="form-label">Dieta</label>
+                                    <select class="form-select" id="dieta" name="dieta">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="Herbívoro">Herbívoro</option>
+                                        <option value="Carnívoro">Carnívoro</option>
+                                        <option value="Omnívoro">Omnívoro</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="peso_kg" class="form-label">Peso (kg)</label>
+                                    <input type="number" class="form-control" id="peso_kg" name="peso_kg" step="0.01">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="altura_metros" class="form-label">Altura (m)</label>
+                                    <input type="number" class="form-control" id="altura_metros" name="altura_metros" step="0.01">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="longitud_metros" class="form-label">Longitud (m)</label>
+                                    <input type="number" class="form-control" id="longitud_metros" name="longitud_metros" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Información Geográfica -->
+                        <h5 class="card-title mb-4 mt-5">Información Geográfica</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="era_id" class="form-label">Era Geológica</label>
+                                    <select class="form-select" id="era_id" name="era_id">
+                                        <option value="">Seleccionar era...</option>
+                                        {% for era in eras %}
+                                        <option value="{{ era.id }}">{{ era.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="region_id" class="form-label">Región</label>
+                                    <select class="form-select" id="region_id" name="region_id">
+                                        <option value="">Seleccionar región...</option>
+                                        {% for region in regiones %}
+                                        <option value="{{ region.id }}">{{ region.nombre }} ({{ region.pais }})</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hábitats -->
+                        <h5 class="card-title mb-4 mt-5">Hábitats</h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Selecciona los hábitats donde vivía</label>
+                            <div class="border p-3 rounded">
+                                {% for habitat in habitats %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="habitat_{{ habitat.id }}" name="habitats_seleccionados" value="{{ habitat.id }}">
+                                    <label class="form-check-label" for="habitat_{{ habitat.id }}">
+                                        {{ habitat.nombre }} ({{ habitat.tipo_ambiente }})
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-white">
+                        <a href="/dinosaurios/" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-success">Crear Dinosaurio</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

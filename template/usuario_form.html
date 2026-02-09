@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block titulo %}{{ 'Nuevo Usuario' if modo == 'nuevo' else 'Editar Usuario' }}{% endblock %}
+
+{% block estilos %}
+<style>
+    .form-page { max-width: 800px; margin: 0 auto; }
+
+    .form-hero {
+        padding: 22px;
+        border-radius: 16px;
+        border: 1px solid #1f2a2e;
+        background: linear-gradient(135deg, rgba(183,140,74,0.12), rgba(17,24,26,0.8));
+        margin-bottom: 18px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+
+    .form-hero h1 { margin: 0; font-size: 26px; }
+    .form-hero p { margin-top: 8px; color: #a0a7ad; }
+
+    .card {
+        background: #0f1416;
+        border: 1px solid #1f2a2e;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+    }
+
+    .card-body { padding: 20px; }
+
+    .field {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 14px;
+    }
+
+    .field label { color: #e7ecef; font-weight: 600; }
+
+    input, select {
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid #1f2a2e;
+        background: #11181a;
+        color: #e7ecef;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #1f2a2e;
+        text-decoration: none;
+        color: #e7ecef;
+        background: #11181a;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); border-color: #2c3a40; }
+    .btn-primary { background: #b78c4a; color: #0b0f10; border-color: #b78c4a; font-weight: 600; }
+
+    .form-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .error-msg { color: #ffc1c1; margin-bottom: 10px; }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="form-page">
+    <div class="form-hero">
+        <h1>{{ '➕ Nuevo Usuario' if modo == 'nuevo' else '✏️ Editar Usuario' }}</h1>
+        <p>Define datos básicos, rol y estado del usuario.</p>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% if error %}
+            <div class="error-msg">{{ error }}</div>
+            {% endif %}
+
+            <form method="post" action="{% if modo == 'nuevo' %}/usuarios/nuevo{% else %}/usuarios/{{ usuario_obj.id }}/editar{% endif %}">
+                <div class="field">
+                    <label for="username">Usuario</label>
+                    <input id="username" name="username" type="text" value="{{ usuario_obj.username if usuario_obj else '' }}" required>
+                </div>
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" value="{{ usuario_obj.email if usuario_obj else '' }}">
+                </div>
+
+                <div class="field">
+                    <label for="rol">Rol</label>
+                    <select id="rol" name="rol">
+                        <option value="usuario" {% if usuario_obj and usuario_obj.rol == 'usuario' %}selected{% endif %}>Usuario</option>
+                        <option value="admin" {% if usuario_obj and usuario_obj.rol == 'admin' %}selected{% endif %}>Admin</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="activo">
+                        <input id="activo" name="activo" type="checkbox" {% if not usuario_obj or usuario_obj.activo %}checked{% endif %}>
+                        Activo
+                    </label>
+                </div>
+
+                <div class="field">
+                    <label for="password">{% if modo == 'nuevo' %}Contraseña{% else %}Nueva contraseña (opcional){% endif %}</label>
+                    <input id="password" name="password" type="password" {% if modo == 'nuevo' %}required{% endif %}>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Guardar</button>
+                    <a class="btn" href="/usuarios">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

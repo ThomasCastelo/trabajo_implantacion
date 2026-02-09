@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block titulo %}Gestión de Usuarios{% endblock %}
+
+{% block estilos %}
+<style>
+    .user-page { max-width: 1200px; margin: 0 auto; }
+
+    .user-hero {
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid #1f2a2e;
+        background: linear-gradient(135deg, rgba(183,140,74,0.12), rgba(17,24,26,0.8));
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+
+    .user-hero h1 { margin: 0; font-size: 28px; }
+    .user-hero p { margin-top: 8px; color: #a0a7ad; }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #1f2a2e;
+        text-decoration: none;
+        color: #e7ecef;
+        background: #11181a;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); border-color: #2c3a40; }
+    .btn-primary { background: #b78c4a; color: #0b0f10; border-color: #b78c4a; font-weight: 600; }
+    .btn-warning { background: #5bbd8b; color: #0b0f10; border-color: #5bbd8b; font-weight: 600; }
+    .btn-danger { background: #c94c4c; color: #0b0f10; border-color: #c94c4c; font-weight: 600; }
+
+    .user-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #0f1416;
+        border: 1px solid #1f2a2e;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+    }
+
+    .user-table th, .user-table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #1f2a2e;
+        text-align: left;
+    }
+
+    .user-table th { background: #11181a; color: #e7ecef; }
+    .user-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid #1f2a2e;
+        background: #11181a;
+        color: #e7ecef;
+        font-size: 12px;
+    }
+
+    .badge-admin { border-color: #b78c4a; color: #f1d2a0; }
+    .badge-user { border-color: #5bbd8b; color: #b7e4c7; }
+    .badge-off { border-color: #c94c4c; color: #ffc1c1; }
+
+    .empty-state {
+        padding: 24px;
+        border-radius: 14px;
+        border: 1px dashed #2c3a40;
+        background: #0f1416;
+        color: #a0a7ad;
+    }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="user-page">
+    <div class="user-hero">
+        <div>
+            <h1>👥 Gestión de Usuarios</h1>
+            <p>Administra cuentas, roles y estado de actividad.</p>
+        </div>
+        <a href="/usuarios/nuevo" class="btn btn-primary">➕ Nuevo Usuario</a>
+    </div>
+
+    {% if usuarios %}
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    <td><strong>{{ u.username }}</strong></td>
+                    <td>{{ u.email if u.email else '-' }}</td>
+                    <td>
+                        {% if u.rol == 'admin' %}
+                        <span class="badge badge-admin">ADMIN</span>
+                        {% else %}
+                        <span class="badge badge-user">USUARIO</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if u.activo %}
+                        <span class="badge badge-user">Activo</span>
+                        {% else %}
+                        <span class="badge badge-off">Inactivo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="user-actions">
+                            <a href="/usuarios/{{ u.id }}/editar" class="btn btn-warning">Editar</a>
+                            <a href="/usuarios/{{ u.id }}/borrar" class="btn btn-danger" onclick="return confirm('¿Estás seguro?')">Borrar</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <h3>No hay usuarios registrados</h3>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

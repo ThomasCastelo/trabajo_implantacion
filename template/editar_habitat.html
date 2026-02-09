@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block titulo %}Editar Hábitat{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-6 mx-auto">
+            <h1 class="mb-4">✏️ Editar Hábitat</h1>
+            
+            <form method="post" action="/habitats/{{ habitat.id }}/editar" enctype="multipart/form-data" class="needs-validation">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ habitat.nombre }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tipo_ambiente" class="form-label">Tipo de Ambiente *</label>
+                            <select class="form-select" id="tipo_ambiente" name="tipo_ambiente" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="Terrestre" {% if habitat.tipo_ambiente == 'Terrestre' %}selected{% endif %}>Terrestre</option>
+                                <option value="Semiácuática" {% if habitat.tipo_ambiente == 'Semiácuática' %}selected{% endif %}>Semiácuática</option>
+                                <option value="Acuática" {% if habitat.tipo_ambiente == 'Acuática' %}selected{% endif %}>Acuática</option>
+                                <option value="Aérea" {% if habitat.tipo_ambiente == 'Aérea' %}selected{% endif %}>Aérea</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="4">{{ habitat.descripcion or '' }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="imagen" class="form-label">Imagen</label>
+                            {% if habitat.imagen %}
+                            <div class="mb-2">
+                                <img src="{{ habitat.imagen }}" alt="{{ habitat.nombre }}" style="max-width: 200px; border-radius: 8px;">
+                            </div>
+                            {% endif %}
+                            <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-white">
+                        <a href="/habitats/" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-warning">Actualizar Hábitat</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

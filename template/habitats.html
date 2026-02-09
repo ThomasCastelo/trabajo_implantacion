@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block titulo %}Gestión de Hábitats{% endblock %}
+
+{% block estilos %}
+<style>
+    .habitat-page { max-width: 1200px; margin: 0 auto; }
+
+    .habitat-hero {
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid #1f2a2e;
+        background: linear-gradient(135deg, rgba(91,189,139,0.12), rgba(17,24,26,0.8));
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+
+    .habitat-hero h1 { margin: 0; font-size: 28px; }
+    .habitat-hero p { margin-top: 8px; color: #a0a7ad; }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #1f2a2e;
+        text-decoration: none;
+        color: #e7ecef;
+        background: #11181a;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); border-color: #2c3a40; }
+    .btn-primary { background: #b78c4a; color: #0b0f10; border-color: #b78c4a; font-weight: 600; }
+    .btn-warning { background: #5bbd8b; color: #0b0f10; border-color: #5bbd8b; font-weight: 600; }
+    .btn-danger { background: #c94c4c; color: #0b0f10; border-color: #c94c4c; font-weight: 600; }
+
+    .habitat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 18px;
+    }
+
+    .habitat-card {
+        background: #0f1416;
+        border: 1px solid #1f2a2e;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .habitat-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #1b2b2d, #0f1416);
+    }
+
+    .habitat-card-body {
+        padding: 16px;
+        flex: 1;
+    }
+
+    .habitat-title { margin: 0 0 6px 0; font-size: 18px; }
+    .habitat-meta { color: #a0a7ad; font-size: 13px; }
+
+    .tag {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid #1f2a2e;
+        background: #11181a;
+        color: #b7e4c7;
+        font-size: 12px;
+        margin: 6px 0 0 0;
+    }
+
+    .habitat-footer {
+        padding: 14px 16px;
+        border-top: 1px solid #1f2a2e;
+        background: #0b0f10;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .empty-state {
+        padding: 24px;
+        border-radius: 14px;
+        border: 1px dashed #2c3a40;
+        background: #0f1416;
+        color: #a0a7ad;
+    }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="habitat-page">
+    <div class="habitat-hero">
+        <div>
+            <h1>🌳 Hábitats Disponibles</h1>
+            <p>Gestiona ecosistemas y ambientes clave para los dinosaurios.</p>
+        </div>
+        <a href="/habitats/nuevo/form" class="btn btn-primary">➕ Nuevo Hábitat</a>
+    </div>
+
+    <!-- Formulario de búsqueda y filtros -->
+    <div style="background: #11181a; padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #1f2a2e;">
+        <form method="get" action="/habitats/" style="display: flex; gap: 12px; align-items: end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; margin-bottom: 6px; color: #a0a7ad; font-size: 13px;">🔍 Buscar</label>
+                <input type="text" name="busqueda" value="{{ filtros.busqueda }}" placeholder="Nombre o descripción..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #1f2a2e; background: #0b0f10; color: #e7ecef;">
+            </div>
+            <div style="min-width: 180px;">
+                <label style="display: block; margin-bottom: 6px; color: #a0a7ad; font-size: 13px;">🌲 Tipo de Ambiente</label>
+                <select name="tipo_ambiente" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #1f2a2e; background: #0b0f10; color: #e7ecef;">
+                    <option value="">Todos</option>
+                    <option value="Bosque" {% if filtros.tipo_ambiente == "Bosque" %}selected{% endif %}>Bosque</option>
+                    <option value="Desierto" {% if filtros.tipo_ambiente == "Desierto" %}selected{% endif %}>Desierto</option>
+                    <option value="Pantano" {% if filtros.tipo_ambiente == "Pantano" %}selected{% endif %}>Pantano</option>
+                    <option value="Pradera" {% if filtros.tipo_ambiente == "Pradera" %}selected{% endif %}>Pradera</option>
+                    <option value="Montaña" {% if filtros.tipo_ambiente == "Montaña" %}selected{% endif %}>Montaña</option>
+                    <option value="Costero" {% if filtros.tipo_ambiente == "Costero" %}selected{% endif %}>Costero</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">Buscar</button>
+                <a href="/habitats/" class="btn" style="padding: 10px 16px; margin-left: 8px;">Limpiar</a>
+            </div>
+        </form>
+    </div>
+
+    {% if habitats %}
+    <div class="habitat-grid">
+        {% for habitat in habitats %}
+        <div class="habitat-card">
+            {% if habitat.imagen %}
+            <img src="{{ habitat.imagen }}" alt="{{ habitat.nombre }}" class="habitat-image">
+            {% endif %}
+            <div class="habitat-card-body">
+                <h3 class="habitat-title">{{ habitat.nombre }}</h3>
+                <div class="habitat-meta">Tipo de ambiente</div>
+                <span class="tag">{{ habitat.tipo_ambiente }}</span>
+                {% if habitat.descripcion %}
+                <p class="habitat-meta" style="margin-top:10px;">{{ habitat.descripcion }}</p>
+                {% endif %}
+            </div>
+            <div class="habitat-footer">
+                <a href="/habitats/{{ habitat.id }}/editar" class="btn btn-warning">Editar</a>
+                {% if usuario and (usuario.rol == 'admin' or usuario.username == 'admin') %}
+                <a href="/habitats/{{ habitat.id }}/borrar" class="btn btn-danger" onclick="return confirm('¿Estás seguro?')">Borrar</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h3>No hay hábitats registrados</h3>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

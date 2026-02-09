@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block titulo %}Actualizar Dinosaurio{% endblock %}
+
+{% block contenido %}
+    <h1>Actualizar Dinosaurio</h1>
+    <form method="post" action="/do_actualizar_dinosaurio">
+        <label for="id">Selecciona Dinosaurio:</label><br>
+        <select name="id" id="id">
+            {% for dinosaurio in dinosaurios %}
+            <option value="{{ dinosaurio.id }}">{{ dinosaurio.id }} - {{ dinosaurio.nombre }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        
+        <label for="nombre">Nuevo nombre:</label><br>
+        <input type="text" id="nombre" name="nombre" placeholder="Introduce nuevo nombre" required>
+        <br><br>
+        
+        <button type="submit">Actualizar Dinosaurio</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block titulo %}Gestión de Regiones{% endblock %}
+
+{% block estilos %}
+<style>
+    .region-page { max-width: 1200px; margin: 0 auto; }
+
+    .region-hero {
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid #1f2a2e;
+        background: linear-gradient(135deg, rgba(91,189,139,0.12), rgba(17,24,26,0.8));
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+
+    .region-hero h1 { margin: 0; font-size: 28px; }
+    .region-hero p { margin-top: 8px; color: #a0a7ad; }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #1f2a2e;
+        text-decoration: none;
+        color: #e7ecef;
+        background: #11181a;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); border-color: #2c3a40; }
+    .btn-primary { background: #b78c4a; color: #0b0f10; border-color: #b78c4a; font-weight: 600; }
+    .btn-warning { background: #5bbd8b; color: #0b0f10; border-color: #5bbd8b; font-weight: 600; }
+    .btn-danger { background: #c94c4c; color: #0b0f10; border-color: #c94c4c; font-weight: 600; }
+
+    .region-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #0f1416;
+        border: 1px solid #1f2a2e;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+    }
+
+    .region-table th, .region-table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #1f2a2e;
+        text-align: left;
+    }
+
+    .region-table th { background: #11181a; color: #e7ecef; }
+    .region-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .thumb-img {
+        width: 60px;
+        height: 45px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #1f2a2e;
+        background: #0b0f10;
+    }
+
+    .empty-state {
+        padding: 24px;
+        border-radius: 14px;
+        border: 1px dashed #2c3a40;
+        background: #0f1416;
+        color: #a0a7ad;
+    }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="region-page">
+    <div class="region-hero">
+        <div>
+            <h1>🌍 Regiones Geográficas</h1>
+            <p>Organiza zonas y continentes con su contexto paleontológico.</p>
+        </div>
+        <a href="/regiones/nueva/form" class="btn btn-primary">➕ Nueva Región</a>
+    </div>
+
+    <!-- Formulario de búsqueda y filtros -->
+    <div style="background: #11181a; padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #1f2a2e;">
+        <form method="get" action="/regiones/" style="display: flex; gap: 12px; align-items: end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; margin-bottom: 6px; color: #a0a7ad; font-size: 13px;">🔍 Buscar</label>
+                <input type="text" name="busqueda" value="{{ filtros.busqueda }}" placeholder="Nombre, país o descripción..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #1f2a2e; background: #0b0f10; color: #e7ecef;">
+            </div>
+            <div style="min-width: 150px;">
+                <label style="display: block; margin-bottom: 6px; color: #a0a7ad; font-size: 13px;">🌎 Continente</label>
+                <select name="continente" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #1f2a2e; background: #0b0f10; color: #e7ecef;">
+                    <option value="">Todos</option>
+                    <option value="África" {% if filtros.continente == "África" %}selected{% endif %}>África</option>
+                    <option value="América" {% if filtros.continente == "América" %}selected{% endif %}>América</option>
+                    <option value="Asia" {% if filtros.continente == "Asia" %}selected{% endif %}>Asia</option>
+                    <option value="Europa" {% if filtros.continente == "Europa" %}selected{% endif %}>Europa</option>
+                    <option value="Oceanía" {% if filtros.continente == "Oceanía" %}selected{% endif %}>Oceanía</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">Buscar</button>
+                <a href="/regiones/" class="btn" style="padding: 10px 16px; margin-left: 8px;">Limpiar</a>
+            </div>
+        </form>
+    </div>
+
+    {% if regiones %}
+        <table class="region-table">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Nombre</th>
+                    <th>País</th>
+                    <th>Continente</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for region in regiones %}
+                <tr>
+                    <td>
+                        {% if region.imagen %}
+                        <img src="{{ region.imagen }}" alt="{{ region.nombre }}" class="thumb-img">
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ region.nombre }}</strong></td>
+                    <td>{{ region.pais }}</td>
+                    <td>{{ region.continente }}</td>
+                    <td>{{ region.descripcion[:80] if region.descripcion else '-' }}</td>
+                    <td>
+                        <div class="region-actions">
+                            <a href="/regiones/{{ region.id }}/editar" class="btn btn-warning">Editar</a>
+                            {% if usuario and (usuario.rol == 'admin' or usuario.username == 'admin') %}
+                            <a href="/regiones/{{ region.id }}/borrar" class="btn btn-danger" onclick="return confirm('¿Estás seguro?')">Borrar</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+    <div class="empty-state">
+        <h3>No hay regiones registradas</h3>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

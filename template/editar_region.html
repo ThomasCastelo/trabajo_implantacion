@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block titulo %}Editar Región{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-6 mx-auto">
+            <h1 class="mb-4">✏️ Editar Región</h1>
+            
+            <form method="post" action="/regiones/{{ region.id }}/editar" enctype="multipart/form-data" class="needs-validation">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ region.nombre }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="pais" class="form-label">País *</label>
+                            <input type="text" class="form-control" id="pais" name="pais" value="{{ region.pais }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="continente" class="form-label">Continente *</label>
+                            <select class="form-select" id="continente" name="continente" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="América del Norte" {% if region.continente == 'América del Norte' %}selected{% endif %}>América del Norte</option>
+                                <option value="América del Sur" {% if region.continente == 'América del Sur' %}selected{% endif %}>América del Sur</option>
+                                <option value="Europa" {% if region.continente == 'Europa' %}selected{% endif %}>Europa</option>
+                                <option value="Asia" {% if region.continente == 'Asia' %}selected{% endif %}>Asia</option>
+                                <option value="África" {% if region.continente == 'África' %}selected{% endif %}>África</option>
+                                <option value="Oceanía" {% if region.continente == 'Oceanía' %}selected{% endif %}>Oceanía</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="4">{{ region.descripcion or '' }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="imagen" class="form-label">Imagen</label>
+                            {% if region.imagen %}
+                            <div class="mb-2">
+                                <img src="{{ region.imagen }}" alt="{{ region.nombre }}" style="max-width: 200px; border-radius: 8px;">
+                            </div>
+                            {% endif %}
+                            <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-white">
+                        <a href="/regiones/" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-warning">Actualizar Región</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

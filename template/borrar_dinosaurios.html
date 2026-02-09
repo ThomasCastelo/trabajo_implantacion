@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block titulo %}Borrar Dinosaurio{% endblock %}
+
+{% block contenido %}
+    <h1>Borrar Dinosaurio</h1>
+    <form method="post" action="/do_borrar_dinosaurio">
+        <label for="id">Selecciona el dinosaurio a borrar:</label><br>
+        <select name="id" id="id">
+            {% for dinosaurio in dinosaurios %}
+            <option value="{{ dinosaurio.id }}">{{ dinosaurio.id }} - {{ dinosaurio.nombre }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <button type="submit">Borrar Dinosaurio</button>
+    </form>
+{% endblock %}

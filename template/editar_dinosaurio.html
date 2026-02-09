@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block titulo %}Editar Dinosaurio{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">✏️ Editar Dinosaurio</h1>
+            
+            <form method="post" action="/dinosaurios/{{ dinosaurio.id }}/editar" enctype="multipart/form-data" class="needs-validation">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Información Básica -->
+                        <h5 class="card-title mb-4">Información Básica</h5>
+                        
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ dinosaurio.nombre }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="3">{{ dinosaurio.descripcion or '' }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="imagen" class="form-label">Imagen del Dinosaurio</label>
+                            {% if dinosaurio.imagen %}
+                            <div class="mb-2">
+                                <img src="{{ dinosaurio.imagen }}" alt="{{ dinosaurio.nombre }}" style="max-width: 200px; border-radius: 8px;">
+                                <p class="text-muted small">Imagen actual</p>
+                            </div>
+                            {% endif %}
+                            <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+                            <small class="text-muted">Deja vacío para mantener la imagen actual</small>
+                        </div>
+                        
+                        <!-- Características -->
+                        <h5 class="card-title mb-4 mt-5">Características Físicas</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tipo" class="form-label">Tipo</label>
+                                    <input type="text" class="form-control" id="tipo" name="tipo" value="{{ dinosaurio.tipo or '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="dieta" class="form-label">Dieta</label>
+                                    <select class="form-select" id="dieta" name="dieta">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="Herbívoro" {% if dinosaurio.dieta == 'Herbívoro' %}selected{% endif %}>Herbívoro</option>
+                                        <option value="Carnívoro" {% if dinosaurio.dieta == 'Carnívoro' %}selected{% endif %}>Carnívoro</option>
+                                        <option value="Omnívoro" {% if dinosaurio.dieta == 'Omnívoro' %}selected{% endif %}>Omnívoro</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="peso_kg" class="form-label">Peso (kg)</label>
+                                    <input type="number" class="form-control" id="peso_kg" name="peso_kg" value="{{ dinosaurio.peso_kg or '' }}" step="0.01">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="altura_metros" class="form-label">Altura (m)</label>
+                                    <input type="number" class="form-control" id="altura_metros" name="altura_metros" value="{{ dinosaurio.altura_metros or '' }}" step="0.01">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="longitud_metros" class="form-label">Longitud (m)</label>
+                                    <input type="number" class="form-control" id="longitud_metros" name="longitud_metros" value="{{ dinosaurio.longitud_metros or '' }}" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Información Geográfica -->
+                        <h5 class="card-title mb-4 mt-5">Información Geográfica</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="era_id" class="form-label">Era Geológica</label>
+                                    <select class="form-select" id="era_id" name="era_id">
+                                        <option value="">Seleccionar era...</option>
+                                        {% for era in eras %}
+                                        <option value="{{ era.id }}" {% if dinosaurio.era_id == era.id %}selected{% endif %}>{{ era.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="region_id" class="form-label">Región</label>
+                                    <select class="form-select" id="region_id" name="region_id">
+                                        <option value="">Seleccionar región...</option>
+                                        {% for region in regiones %}
+                                        <option value="{{ region.id }}" {% if dinosaurio.region_id == region.id %}selected{% endif %}>{{ region.nombre }} ({{ region.pais }})</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hábitats -->
+                        <h5 class="card-title mb-4 mt-5">Hábitats</h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Selecciona los hábitats donde vivía</label>
+                            <div class="border p-3 rounded">
+                                {% for habitat in habitats %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="habitat_{{ habitat.id }}" name="habitats_seleccionados" value="{{ habitat.id }}" {% if habitat.id in habitats_seleccionados %}checked{% endif %}>
+                                    <label class="form-check-label" for="habitat_{{ habitat.id }}">
+                                        {{ habitat.nombre }} ({{ habitat.tipo_ambiente }})
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-white">
+                        <a href="/dinosaurios/{{ dinosaurio.id }}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-warning">Actualizar Dinosaurio</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

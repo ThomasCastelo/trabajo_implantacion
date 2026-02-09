@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block titulo %}Gestión de Eras{% endblock %}
+
+{% block estilos %}
+<style>
+    .era-page { max-width: 1200px; margin: 0 auto; }
+
+    .era-hero {
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid #1f2a2e;
+        background: linear-gradient(135deg, rgba(183,140,74,0.12), rgba(17,24,26,0.8));
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+
+    .era-hero h1 { margin: 0; font-size: 28px; }
+    .era-hero p { margin-top: 8px; color: #a0a7ad; }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #1f2a2e;
+        text-decoration: none;
+        color: #e7ecef;
+        background: #11181a;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); border-color: #2c3a40; }
+    .btn-primary { background: #b78c4a; color: #0b0f10; border-color: #b78c4a; font-weight: 600; }
+    .btn-warning { background: #5bbd8b; color: #0b0f10; border-color: #5bbd8b; font-weight: 600; }
+    .btn-danger { background: #c94c4c; color: #0b0f10; border-color: #c94c4c; font-weight: 600; }
+
+    .era-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #0f1416;
+        border: 1px solid #1f2a2e;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+    }
+
+    .era-table th, .era-table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #1f2a2e;
+        text-align: left;
+    }
+
+    .era-table th { background: #11181a; color: #e7ecef; }
+    .era-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .thumb-img {
+        width: 60px;
+        height: 45px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #1f2a2e;
+        background: #0b0f10;
+    }
+
+    .empty-state {
+        padding: 24px;
+        border-radius: 14px;
+        border: 1px dashed #2c3a40;
+        background: #0f1416;
+        color: #a0a7ad;
+    }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="era-page">
+    <div class="era-hero">
+        <div>
+            <h1>⏰ Eras Geológicas</h1>
+            <p>Gestiona los periodos y descripciones para el catálogo paleontológico.</p>
+        </div>
+        <a href="/eras/nueva/form" class="btn btn-primary">➕ Nueva Era</a>
+    </div>
+
+    <!-- Formulario de búsqueda -->
+    <div style="background: #11181a; padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #1f2a2e;">
+        <form method="get" action="/eras/" style="display: flex; gap: 12px; align-items: end;">
+            <div style="flex: 1;">
+                <label style="display: block; margin-bottom: 6px; color: #a0a7ad; font-size: 13px;">🔍 Buscar</label>
+                <input type="text" name="busqueda" value="{{ filtros.busqueda }}" placeholder="Nombre o descripción..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #1f2a2e; background: #0b0f10; color: #e7ecef;">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">Buscar</button>
+                <a href="/eras/" class="btn" style="padding: 10px 16px; margin-left: 8px;">Limpiar</a>
+            </div>
+        </form>
+    </div>
+
+    {% if eras %}
+        <table class="era-table">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Nombre</th>
+                    <th>Período (M.A.)</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for era in eras %}
+                <tr>
+                    <td>
+                        {% if era.imagen %}
+                        <img src="{{ era.imagen }}" alt="{{ era.nombre }}" class="thumb-img">
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ era.nombre }}</strong></td>
+                    <td>{{ era.periodo_fin }} - {{ era.periodo_inicio }}</td>
+                    <td>{{ era.descripcion[:50] if era.descripcion else '-' }}</td>
+                    <td>
+                        <div class="era-actions">
+                            <a href="/eras/{{ era.id }}/editar" class="btn btn-warning">Editar</a>
+                            {% if usuario and (usuario.rol == 'admin' or usuario.username == 'admin') %}
+                            <a href="/eras/{{ era.id }}/borrar" class="btn btn-danger" onclick="return confirm('¿Estás seguro?')">Borrar</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+    <div class="empty-state">
+        <h3>No hay eras registradas</h3>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

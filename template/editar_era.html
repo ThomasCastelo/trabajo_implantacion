@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block titulo %}Editar Era{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-6 mx-auto">
+            <h1 class="mb-4">✏️ Editar Era Geológica</h1>
+            
+            <form method="post" action="/eras/{{ era.id }}/editar" enctype="multipart/form-data" class="needs-validation">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ era.nombre }}" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="periodo_inicio" class="form-label">Período Inicio (M.A.) *</label>
+                                    <input type="number" class="form-control" id="periodo_inicio" name="periodo_inicio" value="{{ era.periodo_inicio }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="periodo_fin" class="form-label">Período Fin (M.A.) *</label>
+                                    <input type="number" class="form-control" id="periodo_fin" name="periodo_fin" value="{{ era.periodo_fin }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="4">{{ era.descripcion or '' }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="imagen" class="form-label">Imagen</label>
+                            {% if era.imagen %}
+                            <div class="mb-2">
+                                <img src="{{ era.imagen }}" alt="{{ era.nombre }}" style="max-width: 200px; border-radius: 8px;">
+                            </div>
+                            {% endif %}
+                            <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-white">
+                        <a href="/eras/" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-warning">Actualizar Era</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block titulo %}Gestión de Dinosaurios{% endblock %}
+
+{% block estilos %}
+<style>
+    .dino-page {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .dino-hero {
+        padding: 28px;
+        border: 1px solid #1f2a2e;
+        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(183,140,74,0.12), rgba(17,24,26,0.8));
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 22px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+
+    .dino-hero h1 {
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .dino-hero p {
+        margin-top: 8px;
+        color: #a0a7ad;
+    }
+
+    .dino-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #1f2a2e;
+        text-decoration: none;
+        color: #e7ecef;
+        background: #11181a;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        border-color: #2c3a40;
+    }
+
+    .btn-primary {
+        background: #b78c4a;
+        color: #0b0f10;
+        border-color: #b78c4a;
+        font-weight: 600;
+    }
+
+    .btn-warning {
+        background: #5bbd8b;
+        color: #0b0f10;
+        border-color: #5bbd8b;
+        font-weight: 600;
+    }
+
+    .btn-danger {
+        background: #c94c4c;
+        color: #0b0f10;
+        border-color: #c94c4c;
+        font-weight: 600;
+    }
+
+    .btn-accent {
+        background: #3b82f6;
+        color: #0b0f10;
+        border-color: #3b82f6;
+        font-weight: 600;
+    }
+
+    .dino-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 18px;
+    }
+
+    .dino-card {
+        background: #0f1416;
+        border: 1px solid #1f2a2e;
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+    }
+
+    .dino-card-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #1b2b2d, #0f1416);
+    }
+
+    .dino-card-header {
+        padding: 16px;
+        border-bottom: 1px solid #1f2a2e;
+        background: linear-gradient(135deg, rgba(27,43,45,0.6), rgba(15,20,22,0.9));
+    }
+
+    .dino-card-body {
+        padding: 16px;
+        flex: 1;
+    }
+
+    .dino-tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 4px 0 10px;
+    }
+
+    .dino-meta {
+        color: #a0a7ad;
+        font-size: 13px;
+        margin-top: 10px;
+        line-height: 1.6;
+    }
+
+    .tag {
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid #1f2a2e;
+        background: #11181a;
+        margin: 4px 4px 0 0;
+    }
+
+    .tag-accent { border-color: #b78c4a; color: #f1d2a0; }
+    .tag-info { border-color: #5bbd8b; color: #b7e4c7; }
+
+    .dino-card-footer {
+        padding: 14px 16px;
+        border-top: 1px solid #1f2a2e;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        background: #0b0f10;
+    }
+
+    .empty-state {
+        padding: 24px;
+        border-radius: 14px;
+        border: 1px dashed #2c3a40;
+        background: #0f1416;
+        color: #a0a7ad;
+    }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="dino-page">
+    <div class="dino-hero">
+        <div>
+            <h1>🦖 Catálogo del Museo Jurásico</h1>
+            <p>Explora especies, hábitats y eras con una vista curada del archivo paleontológico.</p>
+        </div>
+        <div class="dino-actions">
+            <a href="/dinosaurios/nuevo/form" class="btn btn-primary">➕ Nuevo Dinosaurio</a>
+        </div>
+    </div>
+
+    <!-- Formulario de búsqueda y filtros -->
+    <div style="background: #11181a; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #1f2a2e;">
+        <form method="get" action="/dinosaurios/" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: end;">
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; margin-bottom: 6px; color: #a0a7ad; font-size: 13px;">🔍 Buscar</label>
+                <input type="text" name="busqueda" value="{{ filtros.busqueda }}" placeholder="Nombre o descripción..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #1f2a2e; background: #0b0f10; color: #e7ecef;">
+            </div>
+            <div style="min-width: 150px;">
+                <label style="display: block; margin-bottom: 6px; color: #a0a7ad; font-size: 13px;">🌍 Era</label>
+                <select name="era_id" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #1f2a2e; background: #0b0f10; color: #e7ecef;">
+                    <option value="">Todas</option>
+                    {% for era in todas_eras %}
+                    <option value="{{ era.id }}" {% if filtros.era_id == era.id %}selected{% endif %}>{{ era.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="min-width: 150px;">
+                <label style="display: block; margin-bottom: 6px; color: #a0a7ad; font-size: 13px;">📍 Región</label>
+                <select name="region_id" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #1f2a2e; background: #0b0f10; color: #e7ecef;">
+                    <option value="">Todas</option>
+                    {% for region in todas_regiones %}
+                    <option value="{{ region.id }}" {% if filtros.region_id == region.id %}selected{% endif %}>{{ region.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="min-width: 130px;">
+                <label style="display: block; margin-bottom: 6px; color: #a0a7ad; font-size: 13px;">🍖 Dieta</label>
+                <select name="dieta" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #1f2a2e; background: #0b0f10; color: #e7ecef;">
+                    <option value="">Todas</option>
+                    <option value="Carnívoro" {% if filtros.dieta == "Carnívoro" %}selected{% endif %}>Carnívoro</option>
+                    <option value="Herbívoro" {% if filtros.dieta == "Herbívoro" %}selected{% endif %}>Herbívoro</option>
+                    <option value="Omnívoro" {% if filtros.dieta == "Omnívoro" %}selected{% endif %}>Omnívoro</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">Buscar</button>
+                <a href="/dinosaurios/" class="btn" style="padding: 10px 16px; margin-left: 8px;">Limpiar</a>
+            </div>
+        </form>
+    </div>
+
+    {% if dinosaurios %}
+    <div class="dino-grid">
+        {% for dino in dinosaurios %}
+        <div class="dino-card">
+            {% if dino.imagen %}
+            <img src="{{ dino.imagen }}" alt="{{ dino.nombre }}" class="dino-card-image">
+            {% endif %}
+            <div class="dino-card-header">
+                <h3>{{ dino.nombre }}</h3>
+                {% if dino.descripcion %}
+                <div class="dino-meta">{{ dino.descripcion[:90] }}...</div>
+                {% endif %}
+            </div>
+            <div class="dino-card-body">
+                <div class="dino-tags">
+                    {% if dino.descripcion %}
+                    {% endif %}
+                    {% if dino.tipo %}
+                    <span class="tag tag-accent">{{ dino.tipo }}</span>
+                    {% endif %}
+                    {% if dino.dieta %}
+                    <span class="tag tag-info">{{ dino.dieta }}</span>
+                    {% endif %}
+                </div>
+                <div class="dino-meta">
+                {% if dino.era_id %}
+                <div><strong>Era:</strong> {{ dino.era.nombre if dino.era else 'Desconocida' }}</div>
+                {% endif %}
+                {% if dino.region_id %}
+                <div><strong>Región:</strong> {{ dino.region.nombre if dino.region else 'Desconocida' }}</div>
+                {% endif %}
+                {% if dino.habitats %}
+                <div><strong>Hábitats:</strong>
+                    {% for habitat in dino.habitats %}
+                    <span class="tag">{{ habitat.nombre }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if dino.peso_kg or dino.altura_metros or dino.longitud_metros %}
+                <div style="margin-top:8px;">
+                    {% if dino.altura_metros %}📏 {{ dino.altura_metros }}m{% endif %}
+                    {% if dino.longitud_metros %} · 📐 {{ dino.longitud_metros }}m{% endif %}
+                    {% if dino.peso_kg %} · ⚖️ {{ dino.peso_kg }}kg{% endif %}
+                </div>
+                {% endif %}
+                </div>
+            </div>
+            <div class="dino-card-footer">
+                <a href="/dinosaurios/{{ dino.id }}" class="btn btn-primary">Ver Detalle</a>
+                <a href="/dinosaurios/{{ dino.id }}/editar" class="btn btn-warning">Editar</a>
+                <a href="/dinosaurios/{{ dino.id }}#comentarios" class="btn btn-accent">Comentarios</a>
+                {% if usuario and (usuario.rol == "admin" or usuario.username == "admin") %}
+                <a href="/dinosaurios/{{ dino.id }}/borrar" class="btn btn-danger" onclick="return confirm('¿Estás seguro?')">Borrar</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h3>No hay dinosaurios registrados</h3>
+        <p>Haz clic en “Nuevo Dinosaurio” para agregar uno.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

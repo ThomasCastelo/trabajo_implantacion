@@ -92,3 +92,7 @@ dmypy.json
 *.pem
 *.key
 *.crt
+
+# Archivos temporales o con nombres problemáticos
+tapi*
+*python.debugpy*

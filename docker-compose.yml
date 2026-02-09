@@ -2,9 +2,7 @@ version: "3.9"
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: thomascasot/museo-dinosaurios:latest
     container_name: museo-dinosaurios-app
     ports:
       - "8000:8000"
@@ -14,9 +12,6 @@ services:
       - DATABASE_NAME=thomas
       - DATABASE_USER=root
       - DATABASE_PASSWORD=1asir
-    volumes:
-      - .:/app
-      - /app/__pycache__
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/"]
@@ -24,6 +19,18 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+    networks:
+      - museo-network
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 300 --cleanup
+    restart: unless-stopped
     networks:
       - museo-network
 

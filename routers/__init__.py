@@ -5,6 +5,7 @@ from . import eras_router
 from . import regiones_router
 from . import habitats_router
 from . import usuarios_router
+from . import comentarios_router
 
 __all__ = [
     'auth_router',
@@ -12,5 +13,6 @@ __all__ = [
     'eras_router',
     'regiones_router',
     'habitats_router',
-    'usuarios_router'
+    'usuarios_router',
+    'comentarios_router'
 ]

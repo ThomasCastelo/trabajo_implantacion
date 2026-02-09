@@ -1,100 +1,138 @@
-name: FastAPI CI/CD Pipeline
+# ============================================
+# WORKFLOW DE CI/CD PARA GITHUB ACTIONS
+# ============================================
+# Este archivo define el pipeline de integración continua (CI) 
+# y despliegue continuo (CD) que se ejecuta automáticamente 
+# cuando se hace push a GitHub.
 
+name: FastAPI CI/CD Pipeline  # Nombre visible en la pestaña Actions de GitHub
+
+# ============================================
+# TRIGGERS: Cuándo se ejecuta este workflow
+# ============================================
 on:
-  push:
+  push:  # Se ejecuta cuando hay un push (git push)
     branches:
-      - main
-      - develop
-  pull_request:
+      - main      # Solo en la rama main (producción)
+      - develop   # O en la rama develop (staging)
+  pull_request:  # Se ejecuta cuando se crea un Pull Request
     branches:
       - main
       - develop
 
+# ============================================
+# VARIABLES DE ENTORNO GLOBALES
+# ============================================
 env:
-  DOCKER_IMAGE_NAME: museo-dinosaurios
-  REGISTRY: docker.io
+  DOCKER_IMAGE_NAME: museo-dinosaurios  # Nombre de la imagen Docker
+  REGISTRY: docker.io                   # Docker Hub como registro
 
+# ============================================
+# JOBS: Trabajos que se ejecutarán
+# ============================================
 jobs:
-  # Job 1: Testing
+  # ==========================================
+  # JOB 1: TESTING - Validar el código
+  # ==========================================
   test:
-    name: Run Tests
-    runs-on: ubuntu-latest
+    name: Run Tests                      # Nombre descriptivo del job
+    runs-on: ubuntu-latest               # Sistema operativo del runner de GitHub
     
     steps:
+      # Paso 1: Descargar el código del repositorio
       - name: Checkout código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4        # Action oficial de GitHub para clonar repo
 
+      # Paso 2: Configurar Python 3.11
       - name: Setup Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v4    # Action para instalar Python
         with:
-          python-version: "3.11"
-          cache: 'pip'
+          python-version: "3.11"         # Versión específica de Python
+          cache: 'pip'                   # Cachear dependencias para ir más rápido
 
+      # Paso 3: Instalar todas las dependencias
       - name: Instalar dependencias
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest pytest-cov flake8
+          python -m pip install --upgrade pip              # Actualizar pip
+          pip install -r requirements.txt                  # Instalar dependencias del proyecto
+          pip install pytest pytest-cov flake8            # Herramientas de testing y linting
 
+      # Paso 4: Verificar calidad del código con Flake8 (linter)
       - name: Linting con Flake8
         run: |
+          # Primera línea: Errores críticos (E9) y errores de sintaxis (F)
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || true
+          # Segunda línea: Estadísticas generales, máx 10 complejidad, 127 chars por línea
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-  # Job 2: Build y Push Docker Images
+  # ==========================================
+  # JOB 2: BUILD & PUSH - Crear imagen Docker
+  # ==========================================
   docker-build-push:
-    name: Docker Build and Push
-    runs-on: ubuntu-latest
-    needs: test
+    name: Docker Build and Push          # Nombre del job
+    runs-on: ubuntu-latest               # Runner de Ubuntu
+    needs: test                          # Solo se ejecuta SI el job 'test' pasó exitosamente
+    # Condición: solo en push a main/develop (no en pull requests)
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     
     steps:
+      # Paso 1: Descargar código nuevamente
       - name: Checkout código
         uses: actions/checkout@v4
 
+      # Paso 2: Configurar Docker Buildx (herramienta avanzada de build)
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3   # Permite multi-platform builds y caché
 
+      # Paso 3: Hacer login en Docker Hub
       - name: Login a Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v3          # Action oficial de Docker
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}  # Username desde GitHub Secrets
+          password: ${{ secrets.DOCKERHUB_TOKEN }}     # Token desde GitHub Secrets
 
+      # Paso 4: Generar tags y labels para la imagen
       - name: Extraer metadata (tags, labels)
-        id: meta
-        uses: docker/metadata-action@v5
+        id: meta                           # ID para referenciar este paso después
+        uses: docker/metadata-action@v5    # Action para generar metadata automática
         with:
+          # Formato: usuario/imagen
           images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}  # Tag 'latest' solo en main
+            type=ref,event=branch                               # Tag con nombre de rama
+            type=semver,pattern={{version}}                     # Tag con versión semántica
+            type=sha,prefix={{branch}}-                          # Tag con hash de commit
 
+      # Paso 5: Construir imagen y subirla a Docker Hub
       - name: Build y Push imagen Docker
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v5   # Action oficial de Docker para build
         with:
-          context: .
-          file: ./Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          context: .                         # Directorio de contexto (raíz del proyecto)
+          file: ./Dockerfile                 # Ubicación del Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}  # Push solo si no es PR
+          tags: ${{ steps.meta.outputs.tags }}              # Tags generados en paso anterior
+          labels: ${{ steps.meta.outputs.labels }}          # Labels generados
+          cache-from: type=gha               # Usar caché de GitHub Actions
+          cache-to: type=gha,mode=max        # Guardar caché para siguientes builds
 
-  # Job 3: Notificaciones
+  # ==========================================
+  # JOB 3: NOTIFICATIONS - Reportar resultados
+  # ==========================================
   notify:
-    name: Status Notifications
-    runs-on: ubuntu-latest
-    needs: [test, docker-build-push]
-    if: always()
+    name: Status Notifications            # Nombre del job
+    runs-on: ubuntu-latest               # Runner Ubuntu
+    needs: [test, docker-build-push]     # Espera a que terminen AMBOS jobs anteriores
+    if: always()                         # Se ejecuta SIEMPRE (incluso si fallan jobs anteriores)
     
     steps:
+      # Verificar si el job de tests fue exitoso
       - name: Check test status
         run: |
+          # Si los tests fallaron, reportar error y salir con código 1
           if [ "${{ needs.test.result }}" != "success" ]; then
             echo "❌ Tests fallaron"
             exit 1
           fi
+          # Si todo bien, mensaje de éxito
           echo "✅ Pipeline completado exitosamente"

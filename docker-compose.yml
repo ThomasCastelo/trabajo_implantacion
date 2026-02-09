@@ -1,39 +1,90 @@
-version: "3.9"
+# ============================================
+# DOCKER COMPOSE - CONFIGURACIÓN DE PRODUCCIÓN
+# ============================================
+# Este archivo define los servicios para producción:
+# 1. App FastAPI (desde Docker Hub)
+# 2. Watchtower (auto-actualización)
 
+version: "3.9"  # Versión de Docker Compose
+
+# ============================================
+# SERVICIOS: Contenedores que se ejecutarán
+# ============================================
 services:
+  # ==========================================
+  # SERVICIO 1: Aplicación FastAPI
+  # ==========================================
   app:
+    # Imagen desde Docker Hub (no se construye local, se descarga)
+    # Esta imagen fue creada por GitHub Actions y subida a Docker Hub
     image: thomascasot/museo-dinosaurios:latest
+    
+    # Nombre del contenedor (más fácil de identificar)
     container_name: museo-dinosaurios-app
+    
+    # Mapeo de puertos: HOST:CONTENEDOR
+    # Puerto 8000 del host → Puerto 8000 del contenedor
     ports:
       - "8000:8000"
+    
+    # Variables de entorno para la aplicación
+    # Se pasan al contenedor para configurar la conexión a BD
     environment:
-      - DATABASE_HOST=informatica.iesquevedo.es
-      - DATABASE_PORT=3333
-      - DATABASE_NAME=thomas
-      - DATABASE_USER=root
-      - DATABASE_PASSWORD=1asir
+      - DATABASE_HOST=informatica.iesquevedo.es  # Servidor MySQL
+      - DATABASE_PORT=3333                       # Puerto MySQL
+      - DATABASE_NAME=thomas                     # Nombre de la base de datos
+      - DATABASE_USER=root                       # Usuario de BD
+      - DATABASE_PASSWORD=1asir                  # Contraseña de BD
+    
+    # Política de reinicio: reiniciar siempre excepto si se para manualmente
     restart: unless-stopped
+    
+    # Health check: Docker verificará que la app esté funcionando
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]  # Comando para verificar salud
+      interval: 30s      # Revisar cada 30 segundos
+      timeout: 10s       # Timeout de 10 segundos para la petición
+      retries: 3         # 3 intentos antes de marcar como "unhealthy"
+      start_period: 10s  # Esperar 10s antes del primer health check
+    
+    # Red virtual donde estará el contenedor
     networks:
       - museo-network
+    
+    # Label para Watchtower: este contenedor DEBE ser monitoreado
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 
+  # ==========================================
+  # SERVICIO 2: Watchtower (Auto-Update)
+  # ==========================================
   watchtower:
+    # Imagen oficial de Watchtower
     image: containrrr/watchtower
+    
+    # Nombre del contenedor
     container_name: watchtower
+    
+    # Volumen: montar el socket de Docker para que Watchtower pueda controlar Docker
+    # Watchtower necesita acceso al daemon de Docker para parar/iniciar contenedores
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    
+    # Comando personalizado para Watchtower:
+    # --interval 300: Revisar cada 300 segundos (5 minutos) si hay nuevas imágenes
+    # --cleanup: Eliminar imágenes viejas después de actualizar (ahorra espacio)
     command: --interval 300 --cleanup
+    
+    # Reiniciar siempre (excepto si se para manualmente)
     restart: unless-stopped
+    
+    # Red compartida con la app (pueden comunicarse)
     networks:
       - museo-network
 
+# ============================================
+# REDES: Definición de redes virtuales
+# ============================================
 networks:
   museo-network:
-    driver: bridge
+    driver: bridge  # Driver bridge: red aislada entre contenedores

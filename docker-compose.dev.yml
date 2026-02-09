@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: museo-dinosaurios-dev
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_HOST=informatica.iesquevedo.es
+      - DATABASE_PORT=3333
+      - DATABASE_NAME=thomas
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=1asir
+    volumes:
+      # Monta tu código local dentro del contenedor
+      - ./template:/app/template
+      - ./routers:/app/routers
+      - ./data:/app/data
+      - ./domain:/app/domain
+      - ./utils:/app/utils
+      - ./static:/app/static
+      - ./main.py:/app/main.py
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+    networks:
+      - museo-network
+
+networks:
+  museo-network:
+    driver: bridge

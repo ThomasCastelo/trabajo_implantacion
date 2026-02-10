@@ -13,7 +13,11 @@ from routers import auth_router, dinosaurios_router, eras_router, regiones_route
 import uvicorn
 
 # Crear la aplicación FastAPI
-app = FastAPI(title="🦖 Museo de Dinosaurios", description="Sistema de gestión de dinosaurios")
+app = FastAPI(
+    title="🦖 Museo de Dinosaurios - AUTO-UPDATE FUNCIONANDO ✅", 
+    description="Sistema de gestión de dinosaurios con CI/CD completo",
+    version="2.0.0"
+)
 
 # ⭐ IMPORTANTE: Agregar el middleware de sesiones
 app.add_middleware(

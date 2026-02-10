@@ -60,7 +60,7 @@ services:
   # ==========================================
   watchtower:
     # Imagen oficial de Watchtower
-    image: containrrr/watchtower
+    image: containrrr/watchtower:latest
     
     # Nombre del contenedor
     container_name: watchtower
@@ -70,7 +70,18 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     
-    # Comando personalizado para Watchtower:
+    # Variables de entorno para Watchtower
+    environment:
+      # Usar la API de Docker compatible con el daemon actual
+      - DOCKER_API_VERSION=1.44
+      # Solo actualizar contenedores con el label enable=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      # Intervalo de revisión (se puede configurar aquí también)
+      - WATCHTOWER_POLL_INTERVAL=300
+      # Limpiar imágenes viejas
+      - WATCHTOWER_CLEANUP=true
+    
+    # Comando personalizado para Watchtower (se mantiene por compatibilidad)
     # --interval 300: Revisar cada 300 segundos (5 minutos) si hay nuevas imágenes
     # --cleanup: Eliminar imágenes viejas después de actualizar (ahorra espacio)
     command: --interval 300 --cleanup

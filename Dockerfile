@@ -49,11 +49,16 @@ LABEL maintainer="tu-email@example.com" \
       description="FastAPI Museo Dinosaurios"
 
 # Variables de entorno para optimizar Python en producción
-ENV PYTHONUNBUFFERED=1 \              # No hacer buffer de stdout/stderr (logs en tiempo real)
-    PYTHONDONTWRITEBYTECODE=1 \        # No crear archivos .pyc (reduce escritura en disco)
-    PYTHONHASHSEED=random \            # Hash aleatorio para seguridad
-    PIP_NO_CACHE_DIR=1 \               # Deshabilitar caché de pip
-    PIP_DISABLE_PIP_VERSION_CHECK=1    # No verificar versión de pip (más rápido)
+# - PYTHONUNBUFFERED: logs en tiempo real
+# - PYTHONDONTWRITEBYTECODE: no crear .pyc
+# - PYTHONHASHSEED: hash aleatorio
+# - PIP_NO_CACHE_DIR: sin cache de pip
+# - PIP_DISABLE_PIP_VERSION_CHECK: no verificar version de pip
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Crear usuario no-root llamado 'fastapi' con UID 1000
 # Ejecutar como no-root es una buena práctica de seguridad

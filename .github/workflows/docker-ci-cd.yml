@@ -24,7 +24,7 @@ on:
 # VARIABLES DE ENTORNO GLOBALES
 # ============================================
 env:
-  DOCKER_IMAGE_NAME: museo-dinosaurios  # Nombre de la imagen Docker
+  DOCKER_IMAGE_NAME: museo-dinosaurios  # Nombre de la imagen Docker (sin usuario)
   REGISTRY: docker.io                   # Docker Hub como registro
 
 # ============================================
